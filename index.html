@@ -2735,6 +2735,37 @@
 
     loadingTimeout = window.setTimeout(finishLoading, 15000);
 
+    const getProjectFallbackSrc = (src) => {
+      if (!src) return null;
+      let pathname = src;
+      try {
+        pathname = new URL(src, window.location.href).pathname;
+      } catch (_) {
+        pathname = String(src);
+      }
+      const match = pathname.match(/\/assets\/projects\/[^/]+\/([^/?#]+)(?:[?#].*)?$/i);
+      return match ? match[1] : null;
+    };
+
+    const attachProjectFallback = (element) => {
+      const fallbackSrc = getProjectFallbackSrc(element.currentSrc || element.src || element.getAttribute("src"));
+      if (!fallbackSrc || element.dataset.fallbackReady === "true") return;
+      element.dataset.fallbackReady = "true";
+      element.addEventListener("error", () => {
+        if (element.dataset.fallbackApplied === "true") return;
+        element.dataset.fallbackApplied = "true";
+        if (element.tagName === "VIDEO") {
+          element.src = fallbackSrc;
+          element.load();
+          element.play().catch(() => {});
+          return;
+        }
+        element.src = fallbackSrc;
+      });
+    };
+
+    document.querySelectorAll('img[src], video[src]').forEach(attachProjectFallback);
+
     const setLocalPointer = (element, event, xName, yName) => {
       const rect = element.getBoundingClientRect();
       const x = ((event.clientX - rect.left) / rect.width) * 100;
@@ -3179,6 +3210,7 @@
           video.playsInline = true;
           video.preload = "auto";
           video.setAttribute("aria-label", `${project.title} 作品视频 ${index + 1}`);
+          attachProjectFallback(video);
           shot.append(video);
           video.play().catch(() => {});
         } else {
@@ -3186,6 +3218,7 @@
           img.src = image;
           img.alt = `${project.title} 作品图 ${index + 1}`;
           img.loading = index > 1 ? "lazy" : "eager";
+          attachProjectFallback(img);
           shot.append(img);
         }
         detailGallery.append(shot);
