@@ -2128,25 +2128,60 @@
       }
 
       .hero {
-        grid-template-columns: 1fr;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: center;
+        gap: 24px;
         min-height: 100vh;
-        padding: 104px 28px 48px;
+        padding: 104px 28px 56px;
       }
 
       .copy-block {
-        min-height: calc(100vh - 152px);
+        min-height: auto;
+        width: 100%;
+        align-items: flex-start;
       }
 
       .hero-word {
-        font-size: clamp(72px, 16vw, 150px);
+        width: 100%;
+        max-width: 100%;
+        font-size: clamp(62px, 15vw, 126px);
+        line-height: 0.9;
+        padding: 0.1em 0 0.14em;
+        transform: none;
+      }
+
+      .hero-word span {
+        width: 100%;
+        transform: none;
       }
 
       .hero-intro {
-        right: 28px;
-        bottom: 28px;
-        width: min(100%, 360px);
+        position: relative;
+        right: auto;
+        bottom: auto;
+        left: auto;
+        width: 100%;
+        max-width: min(100%, 560px);
+        margin-top: 2px;
         font-size: 11px;
         line-height: 1.75;
+      }
+
+      .hero-media {
+        z-index: 0;
+        opacity: 1;
+      }
+
+      .hero::after {
+        z-index: 1;
+      }
+
+      .copy-block,
+      .hero-intro {
+        position: relative;
+        z-index: 2;
       }
 
       .visual-stage {
@@ -2206,6 +2241,7 @@
       .experience-item {
         width: 100%;
         grid-template-columns: 1fr;
+        row-gap: 10px;
         justify-items: start;
       }
 
@@ -2228,14 +2264,25 @@
         white-space: normal;
       }
 
+      .experience-item strong {
+        grid-column: 1 / 2;
+        grid-row: 1;
+        white-space: normal;
+      }
+
       .experience-item p {
+        grid-column: 1 / 2;
         grid-row: 3;
       }
 
-      .experience-item p,
+      .experience-item p {
+        grid-column: 1 / 2;
+        max-width: 100%;
+      }
+
       .experience-projects {
         grid-column: 1 / 2;
-        grid-row: auto;
+        grid-row: 4;
         max-width: 100%;
       }
 
@@ -2300,21 +2347,37 @@
 
       .hero {
         min-height: 100vh;
-        padding: 88px 16px 128px;
+        padding: 92px 20px 52px;
         overflow: hidden;
       }
 
       .copy-block {
-        min-height: calc(100vh - 126px);
+        min-height: auto;
         width: 100%;
+        align-items: flex-start;
+      }
+
+      .hero-word {
+        max-width: 100%;
+        font-size: clamp(52px, 18vw, 92px);
+        padding: 0.08em 0 0.12em;
+      }
+
+      .hero-intro {
+        width: 100%;
+        max-width: none;
+        margin-top: 4px;
+        font-size: 10px;
+        line-height: 1.65;
       }
 
       .hero-media {
         display: block;
+        z-index: 0;
         background:
-          radial-gradient(circle at 18% 28%, rgba(64, 112, 255, 0.38), transparent 34%),
-          radial-gradient(circle at 82% 66%, rgba(117, 89, 255, 0.34), transparent 38%),
-          radial-gradient(circle at 52% 48%, rgba(244, 114, 182, 0.14), transparent 36%),
+          radial-gradient(circle at 18% 28%, rgba(64, 112, 255, 0.46), transparent 32%),
+          radial-gradient(circle at 82% 66%, rgba(117, 89, 255, 0.42), transparent 34%),
+          radial-gradient(circle at 52% 48%, rgba(244, 114, 182, 0.22), transparent 34%),
           #000;
       }
 
@@ -2323,11 +2386,11 @@
         inset: -28%;
         content: "";
         background:
-          radial-gradient(ellipse at 22% 34%, rgba(64, 112, 255, 0.5), transparent 30%),
-          radial-gradient(ellipse at 78% 58%, rgba(117, 89, 255, 0.44), transparent 34%),
-          radial-gradient(ellipse at 54% 78%, rgba(244, 114, 182, 0.18), transparent 32%);
-        filter: blur(22px);
-        opacity: 0.76;
+          radial-gradient(ellipse at 22% 34%, rgba(64, 112, 255, 0.58), transparent 30%),
+          radial-gradient(ellipse at 78% 58%, rgba(117, 89, 255, 0.5), transparent 34%),
+          radial-gradient(ellipse at 54% 78%, rgba(244, 114, 182, 0.26), transparent 32%);
+        filter: blur(26px);
+        opacity: 0.88;
         animation: mobileHeroDrift 8s ease-in-out infinite alternate;
       }
 
@@ -2338,7 +2401,7 @@
         background:
           linear-gradient(115deg, rgba(255, 255, 255, 0.08), transparent 28%, rgba(255, 255, 255, 0.04) 58%, transparent 78%),
           repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.022) 0 1px, transparent 1px 18px);
-        opacity: 0.7;
+        opacity: 0.82;
       }
 
       .hero-video {
@@ -2347,17 +2410,17 @@
 
       .hero-word {
         width: 100%;
-        max-width: calc(100vw - 32px);
-        padding: 0.16em 8px 0.22em;
-        font-size: clamp(42px, 14vw, 78px);
+        max-width: calc(100vw - 40px);
       }
 
       .hero-intro {
-        right: 16px;
-        bottom: 34px;
-        left: 16px;
-        width: auto;
+        position: relative;
+        right: auto;
+        bottom: auto;
+        left: auto;
+        width: 100%;
         max-width: none;
+        margin-top: 4px;
         font-size: 10px;
         line-height: 1.6;
       }
@@ -2418,7 +2481,7 @@
       }
 
       .section-title {
-        font-size: clamp(44px, 15vw, 72px);
+        font-size: clamp(40px, 13vw, 68px);
       }
 
       .about-card {
@@ -2448,7 +2511,7 @@
 
       .experience-item strong {
         grid-row: 1;
-        font-size: 20px;
+        font-size: 19px;
       }
 
       .experience-item em {
@@ -2483,6 +2546,10 @@
         font-size: 14px;
       }
 
+      .project-no {
+        font-size: 10px;
+      }
+
       .project-card {
         height: auto;
         min-height: 0;
@@ -2491,16 +2558,25 @@
       .project-card h3 {
         max-width: 100%;
         margin-top: 0;
+        font-size: 20px;
       }
 
       .project-card p {
         max-width: 100%;
+        font-size: 11px;
+        line-height: 1.65;
       }
 
       .project-tags {
         right: auto;
         left: auto;
         justify-content: flex-start;
+        gap: 6px;
+      }
+
+      .project-tags span {
+        padding: 6px 8px;
+        font-size: 10px;
       }
 
       .project-visual {
@@ -2538,7 +2614,7 @@
       }
 
       .contact-title {
-        font-size: clamp(54px, 17vw, 82px);
+        font-size: clamp(40px, 15vw, 68px);
       }
 
       .contact-info-stack {
@@ -2856,11 +2932,11 @@
     const fitHeroWord = () => {
       if (!heroSection || !heroWord) return;
 
-      const compactHero = heroSection.clientWidth <= 680;
+      const compactHero = heroSection.clientWidth <= 980;
       const safeWidth = compactHero
-        ? Math.max(220, Math.floor(heroSection.clientWidth - 32))
+        ? Math.max(200, Math.floor(heroSection.clientWidth - 40))
         : Math.max(320, Math.floor(heroSection.clientWidth * 0.84));
-      const minSize = compactHero ? 42 : 84;
+      const minSize = compactHero ? 36 : 84;
       const maxSize = compactHero
         ? Math.min(92, Math.max(minSize, Math.floor(heroSection.clientWidth * 0.18)))
         : Math.min(320, Math.max(minSize, Math.floor(heroSection.clientWidth * 0.18)));
