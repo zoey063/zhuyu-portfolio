@@ -24,6 +24,7 @@
       --accent: linear-gradient(90deg, var(--indigo), var(--violet), var(--pink));
       --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
       --sans: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      --page-gutter: 68px;
     }
 
     * {
@@ -221,7 +222,7 @@
     }
 
     .page {
-      width: calc(100vw - clamp(24px, 4vw, 72px));
+      width: 100%;
       margin: 0 auto;
     }
 
@@ -949,7 +950,7 @@
       align-items: center;
       justify-content: space-between;
       gap: 18px;
-      padding: 22px 0 44px;
+      padding: 22px var(--page-gutter) 44px;
       color: rgba(255, 255, 255, 0.48);
       border-top: 1px solid rgba(255, 255, 255, 0.08);
       font-family: var(--mono);
@@ -966,7 +967,7 @@
 
     .section {
       min-height: 100vh;
-      padding: 120px 0;
+      padding: 120px var(--page-gutter);
       border-top: 1px solid rgba(255, 255, 255, 0.08);
       scroll-margin-top: 96px;
     }
@@ -1048,19 +1049,13 @@
 
     .about-head {
       display: grid;
-      grid-template-columns: 1fr minmax(260px, 380px);
-      gap: 44px;
+      grid-template-columns: 1fr;
       align-items: end;
       margin-bottom: 54px;
     }
 
     .about-head .section-title {
       max-width: 980px;
-    }
-
-    .about-head .muted-line {
-      justify-self: end;
-      margin: 10px 0 0;
     }
 
     .about-profile-panel {
@@ -1447,8 +1442,7 @@
 
     .works-head {
       display: grid;
-      grid-template-columns: 1fr minmax(260px, 380px);
-      gap: 44px;
+      grid-template-columns: 1fr;
       align-items: end;
       margin-bottom: 54px;
     }
@@ -2107,6 +2101,10 @@
     }
 
     @media (max-width: 980px) {
+      :root {
+        --page-gutter: 28px;
+      }
+
       .header-shell {
         min-height: 38px;
       }
@@ -2143,7 +2141,7 @@
 
       .section {
         min-height: auto;
-        padding: 96px 0;
+        padding: 96px var(--page-gutter);
       }
 
       .about-head,
@@ -2151,11 +2149,6 @@
       .works-head,
       .contact-page {
         grid-template-columns: 1fr;
-      }
-
-      .about-head .muted-line,
-      .works-head .muted-line {
-        justify-self: start;
       }
 
       .about-section {
@@ -2258,6 +2251,10 @@
     }
 
     @media (max-width: 680px) {
+      :root {
+        --page-gutter: 20px;
+      }
+
       .site-header {
         padding: 0;
       }
@@ -2276,7 +2273,7 @@
       }
 
       .page {
-        width: calc(100vw - 28px);
+        width: 100%;
       }
 
       .hero {
@@ -2532,7 +2529,6 @@
           <div class="section-kicker">about me</div>
           <h2 class="section-title" data-lines="ABOUT|ZHUYU.">ABOUT ZHUYU.</h2>
         </div>
-        <p class="muted-line">用清晰的产品策略、稳定的视觉系统和细腻的交互体验，完成从顶层设计到界面落地的完整设计闭环。</p>
       </div>
 
       <div class="about-profile-panel">
@@ -2597,14 +2593,13 @@
           <div class="section-kicker">works overview</div>
           <h2 class="section-title" data-lines="SELECTED|PROJECTS.">SELECTED PROJECTS.</h2>
         </div>
-        <p class="muted-line">具备多端全链路设计完整经验，覆盖移动C/B端、PC、鸿蒙。</p>
       </div>
 
       <div class="project-grid">
         <article class="project-card" role="button" tabindex="0" data-project="pc" aria-label="查看大型改版详情">
           <div class="project-no">PROJECT 01</div>
           <div class="project-visual" aria-hidden="true">
-            <img src="assets/projects/pc/frame-04.png" alt="">
+            <img src="assets/projects/pc/frame-04.jpg" alt="">
           </div>
           <h3>大型改版</h3>
           <p>围绕社区场景的核心路径、信息获取效率和浏览体验，完成 PC 端大型改版与关键功能重构。</p>
@@ -2613,7 +2608,7 @@
         <article class="project-card" role="button" tabindex="0" data-project="ip" aria-label="查看品牌视觉升级详情">
           <div class="project-no">PROJECT 02</div>
           <div class="project-visual" aria-hidden="true">
-            <img src="assets/projects/ip/frame-21.png" alt="">
+            <img src="assets/projects/ip/frame-21.jpg" alt="">
           </div>
           <h3>品牌视觉升级</h3>
           <p>以小组件为 IP 实践起点，运用情感化设计构建滑稽 IP 角色资产。</p>
@@ -2622,7 +2617,7 @@
         <article class="project-card" role="button" tabindex="0" data-project="harmony" aria-label="查看多端适配详情">
           <div class="project-no">PROJECT 03</div>
           <div class="project-visual" aria-hidden="true">
-            <img src="assets/projects/harmony/frame-30.png" alt="">
+            <img src="assets/projects/harmony/frame-30.jpg" alt="">
           </div>
           <h3>多端适配</h3>
           <p>在鸿蒙 0-1 新端搭建的过程中，沉淀新规范和多端适配规则，支持多个业务场景的一致体验。</p>
@@ -2631,7 +2626,7 @@
         <article class="project-card" role="button" tabindex="0" data-project="ai" aria-label="查看创新业务详情">
           <div class="project-no">PROJECT 04</div>
           <div class="project-visual" aria-hidden="true">
-            <img src="assets/projects/ai/frame-45.png" alt="">
+            <img src="assets/projects/ai/frame-45.jpg" alt="">
           </div>
           <h3>创新业务</h3>
           <p>围绕创新业务场景，结合 Codex、Figma 与 vibe coding 方法，快速转译成可交互的设计验证页面。</p>
@@ -3044,21 +3039,21 @@
         ],
         tags: ["UX Research", "Web Design", "Responsive Design"],
         images: [
-          "assets/projects/pc/frame-04.png",
-          "assets/projects/pc/frame-05.png",
-          "assets/projects/pc/frame-06.png",
+          "assets/projects/pc/frame-04.jpg",
+          "assets/projects/pc/frame-05.jpg",
+          "assets/projects/pc/frame-06.jpg",
           "assets/projects/pc/frame-07.mov",
-          "assets/projects/pc/frame-08.png",
+          "assets/projects/pc/frame-08.jpg",
           "assets/projects/pc/frame-09.mov",
-          "assets/projects/pc/frame-10.png",
-          "assets/projects/pc/frame-11.png",
-          "assets/projects/pc/frame-12.png",
-          "assets/projects/pc/frame-13.png",
-          "assets/projects/pc/frame-14.png",
-          "assets/projects/pc/frame-15.png",
-          "assets/projects/pc/frame-16.png",
-          "assets/projects/pc/frame-17.png",
-          "assets/projects/pc/frame-18.png"
+          "assets/projects/pc/frame-10.jpg",
+          "assets/projects/pc/frame-11.jpg",
+          "assets/projects/pc/frame-12.jpg",
+          "assets/projects/pc/frame-13.jpg",
+          "assets/projects/pc/frame-14.jpg",
+          "assets/projects/pc/frame-15.jpg",
+          "assets/projects/pc/frame-16.jpg",
+          "assets/projects/pc/frame-17.jpg",
+          "assets/projects/pc/frame-18.jpg"
         ]
       },
       ai: {
@@ -3073,13 +3068,13 @@
         ],
         tags: ["AI", "Vibe Coding"],
         images: [
-          "assets/projects/ai/frame-45.png",
-          "assets/projects/ai/frame-46.png",
-          "assets/projects/ai/frame-48.png",
-          "assets/projects/ai/frame-49.png",
-          "assets/projects/ai/frame-50.png",
-          "assets/projects/ai/frame-47.png",
-          "assets/projects/ai/frame-51.png"
+          "assets/projects/ai/frame-45.jpg",
+          "assets/projects/ai/frame-46.jpg",
+          "assets/projects/ai/frame-48.jpg",
+          "assets/projects/ai/frame-49.jpg",
+          "assets/projects/ai/frame-50.jpg",
+          "assets/projects/ai/frame-47.jpg",
+          "assets/projects/ai/frame-51.jpg"
         ]
       },
       ip: {
@@ -3094,22 +3089,22 @@
         ],
         tags: ["Brand Design", "IP Specification", "AI production"],
         images: [
-          "assets/projects/ip/frame-21.png",
-          "assets/projects/ip/frame-22.png",
-          "assets/projects/ip/frame-23.png",
-          "assets/projects/ip/frame-24.png",
-          "assets/projects/ip/frame-25.png",
-          "assets/projects/ip/frame-27.png",
+          "assets/projects/ip/frame-21.jpg",
+          "assets/projects/ip/frame-22.jpg",
+          "assets/projects/ip/frame-23.jpg",
+          "assets/projects/ip/frame-24.jpg",
+          "assets/projects/ip/frame-25.jpg",
+          "assets/projects/ip/frame-27.jpg",
           "assets/projects/ip/widget-video.mov",
-          "assets/projects/ip/frame-29.png",
-          "assets/projects/ip/frame-30.png",
-          "assets/projects/ip/frame-31.png",
-          "assets/projects/ip/frame-32.png",
-          "assets/projects/ip/frame-33.png",
-          "assets/projects/ip/frame-34.png",
-          "assets/projects/ip/frame-35.png",
+          "assets/projects/ip/frame-29.jpg",
+          "assets/projects/ip/frame-30.jpg",
+          "assets/projects/ip/frame-31.jpg",
+          "assets/projects/ip/frame-32.jpg",
+          "assets/projects/ip/frame-33.jpg",
+          "assets/projects/ip/frame-34.jpg",
+          "assets/projects/ip/frame-35.jpg",
           "assets/projects/ip/frame-36-video.mov",
-          "assets/projects/ip/frame-37.png"
+          "assets/projects/ip/frame-37.jpg"
         ]
       },
       harmony: {
@@ -3124,13 +3119,13 @@
         ],
         tags: ["HarmonyOS", "Multi-End"],
         images: [
-          "assets/projects/harmony/frame-30.png",
-          "assets/projects/harmony/frame-38.png",
-          "assets/projects/harmony/frame-39.png",
-          "assets/projects/harmony/frame-41.png",
-          "assets/projects/harmony/frame-42.png",
-          "assets/projects/harmony/frame-43.png",
-          "assets/projects/harmony/frame-44.png"
+          "assets/projects/harmony/frame-30.jpg",
+          "assets/projects/harmony/frame-38.jpg",
+          "assets/projects/harmony/frame-39.jpg",
+          "assets/projects/harmony/frame-41.jpg",
+          "assets/projects/harmony/frame-42.jpg",
+          "assets/projects/harmony/frame-43.jpg",
+          "assets/projects/harmony/frame-44.jpg"
         ]
       }
     };
