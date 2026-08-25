@@ -2043,6 +2043,20 @@
       }
     }
 
+    @keyframes mobileHeroDrift {
+      0% {
+        transform: translate3d(-7%, -5%, 0) scale(1);
+      }
+
+      50% {
+        transform: translate3d(6%, 4%, 0) scale(1.06);
+      }
+
+      100% {
+        transform: translate3d(-2%, 8%, 0) scale(1.02);
+      }
+    }
+
     body.reveal-ready .section,
     body.reveal-ready .project-card,
     body.reveal-ready .about-card,
@@ -2208,12 +2222,20 @@
 
       .experience-item em {
         grid-column: 1 / 2;
+        grid-row: 2;
+        justify-self: start;
+        text-align: left;
         white-space: normal;
+      }
+
+      .experience-item p {
+        grid-row: 3;
       }
 
       .experience-item p,
       .experience-projects {
         grid-column: 1 / 2;
+        grid-row: auto;
         max-width: 100%;
       }
 
@@ -2278,21 +2300,64 @@
 
       .hero {
         min-height: 100vh;
-        padding: 92px 20px 34px;
+        padding: 88px 16px 128px;
+        overflow: hidden;
       }
 
       .copy-block {
         min-height: calc(100vh - 126px);
+        width: 100%;
+      }
+
+      .hero-media {
+        display: block;
+        background:
+          radial-gradient(circle at 18% 28%, rgba(64, 112, 255, 0.38), transparent 34%),
+          radial-gradient(circle at 82% 66%, rgba(117, 89, 255, 0.34), transparent 38%),
+          radial-gradient(circle at 52% 48%, rgba(244, 114, 182, 0.14), transparent 36%),
+          #000;
+      }
+
+      .hero-media::before {
+        position: absolute;
+        inset: -28%;
+        content: "";
+        background:
+          radial-gradient(ellipse at 22% 34%, rgba(64, 112, 255, 0.5), transparent 30%),
+          radial-gradient(ellipse at 78% 58%, rgba(117, 89, 255, 0.44), transparent 34%),
+          radial-gradient(ellipse at 54% 78%, rgba(244, 114, 182, 0.18), transparent 32%);
+        filter: blur(22px);
+        opacity: 0.76;
+        animation: mobileHeroDrift 8s ease-in-out infinite alternate;
+      }
+
+      .hero-media::after {
+        position: absolute;
+        inset: 0;
+        content: "";
+        background:
+          linear-gradient(115deg, rgba(255, 255, 255, 0.08), transparent 28%, rgba(255, 255, 255, 0.04) 58%, transparent 78%),
+          repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.022) 0 1px, transparent 1px 18px);
+        opacity: 0.7;
+      }
+
+      .hero-video {
+        display: none;
       }
 
       .hero-word {
-        font-size: clamp(48px, 15.2vw, 78px);
+        width: 100%;
+        max-width: calc(100vw - 32px);
+        padding: 0.16em 8px 0.22em;
+        font-size: clamp(42px, 14vw, 78px);
       }
 
       .hero-intro {
-        right: 20px;
-        bottom: 18px;
-        width: min(100%, 300px);
+        right: 16px;
+        bottom: 34px;
+        left: 16px;
+        width: auto;
+        max-width: none;
         font-size: 10px;
         line-height: 1.6;
       }
@@ -2382,11 +2447,23 @@
       }
 
       .experience-item strong {
+        grid-row: 1;
         font-size: 20px;
       }
 
       .experience-item em {
+        grid-row: 2;
+        justify-self: start;
         font-size: 14px;
+        text-align: left;
+      }
+
+      .experience-item p {
+        grid-row: 3;
+      }
+
+      .experience-projects {
+        grid-row: 4;
       }
 
       .experience-projects {
@@ -2779,9 +2856,14 @@
     const fitHeroWord = () => {
       if (!heroSection || !heroWord) return;
 
-      const safeWidth = Math.max(320, Math.floor(heroSection.clientWidth * 0.84));
-      const minSize = 84;
-      const maxSize = Math.min(320, Math.max(minSize, Math.floor(heroSection.clientWidth * 0.18)));
+      const compactHero = heroSection.clientWidth <= 680;
+      const safeWidth = compactHero
+        ? Math.max(220, Math.floor(heroSection.clientWidth - 32))
+        : Math.max(320, Math.floor(heroSection.clientWidth * 0.84));
+      const minSize = compactHero ? 42 : 84;
+      const maxSize = compactHero
+        ? Math.min(92, Math.max(minSize, Math.floor(heroSection.clientWidth * 0.18)))
+        : Math.min(320, Math.max(minSize, Math.floor(heroSection.clientWidth * 0.18)));
 
       let low = minSize;
       let high = maxSize;
@@ -2859,35 +2941,11 @@
         window.setTimeout(finishLoading, 140);
       };
 
-      const queueHeroReveal = () => {
-        if (heroRevealQueued) return;
-        heroRevealQueued = true;
+      const isMobileHero = window.matchMedia("(max-width: 680px)").matches;
 
-        if (heroVideo.requestVideoFrameCallback) {
-          heroVideo.requestVideoFrameCallback(() => releaseHeroFrame());
-        } else {
-          const waitForVisibleFrame = () => {
-            if (heroFrameReleased || loadingFinished || loadingClosing) return;
-            if (heroVideo.readyState >= 2 && !heroVideo.paused) {
-              window.requestAnimationFrame(() => {
-                window.requestAnimationFrame(releaseHeroFrame);
-              });
-              return;
-            }
-
-            window.setTimeout(waitForVisibleFrame, 80);
-          };
-
-          waitForVisibleFrame();
-        }
-      };
-
-      const startHeroVideo = () => {
-        queueHeroReveal();
-        heroVideo.play().catch(() => {});
-      };
-
-      if (window.Hls && window.Hls.isSupported()) {
+      if (isMobileHero) {
+        releaseHeroFrame();
+      } else if (window.Hls && window.Hls.isSupported()) {
         const heroHls = new window.Hls({
           enableWorker: true,
           lowLatencyMode: false
@@ -2895,12 +2953,49 @@
 
         heroHls.loadSource(heroSrc);
         heroHls.attachMedia(heroVideo);
-        heroHls.on(window.Hls.Events.MANIFEST_PARSED, startHeroVideo);
+        heroHls.on(window.Hls.Events.MANIFEST_PARSED, () => {
+          if (heroRevealQueued) return;
+          heroRevealQueued = true;
+
+          const queueHeroReveal = () => {
+            if (heroVideo.requestVideoFrameCallback) {
+              heroVideo.requestVideoFrameCallback(() => releaseHeroFrame());
+            } else {
+              const waitForVisibleFrame = () => {
+                if (heroFrameReleased || loadingFinished || loadingClosing) return;
+                if (heroVideo.readyState >= 2 && !heroVideo.paused) {
+                  window.requestAnimationFrame(() => {
+                    window.requestAnimationFrame(releaseHeroFrame);
+                  });
+                  return;
+                }
+
+                window.setTimeout(waitForVisibleFrame, 80);
+              };
+
+              waitForVisibleFrame();
+            }
+          };
+
+          queueHeroReveal();
+          heroVideo.play().catch(() => {});
+        });
 
         window.addEventListener("beforeunload", () => heroHls.destroy(), { once: true });
       } else if (heroVideo.canPlayType("application/vnd.apple.mpegurl")) {
         heroVideo.src = heroSrc;
-        heroVideo.addEventListener("loadedmetadata", startHeroVideo, { once: true });
+        heroVideo.addEventListener("loadedmetadata", () => {
+          if (heroRevealQueued) return;
+          heroRevealQueued = true;
+          if (heroVideo.requestVideoFrameCallback) {
+            heroVideo.requestVideoFrameCallback(() => releaseHeroFrame());
+          } else {
+            window.requestAnimationFrame(() => {
+              window.requestAnimationFrame(releaseHeroFrame);
+            });
+          }
+          heroVideo.play().catch(() => {});
+        }, { once: true });
       }
     }
 
