@@ -25,6 +25,9 @@
       --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
       --sans: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       --page-gutter: 68px;
+      --hero-gutter: 68px;
+      --hero-scale: 1;
+      --hero-word-base: 244px;
     }
 
     * {
@@ -234,7 +237,7 @@
       width: 100vw;
       min-height: 100vh;
       margin-left: calc(50% - 50vw);
-      padding: 116px clamp(24px, 4vw, 76px) 58px;
+      padding: 116px var(--hero-gutter) 58px;
       overflow: visible;
       background: #000;
       isolation: isolate;
@@ -364,11 +367,11 @@
       align-items: center;
       justify-content: center;
       margin: 0;
-      padding: 0.18em clamp(20px, 4vw, 88px) 0.24em;
+      padding: 0.18em 88px 0.24em;
       color: rgba(255, 255, 255, 0.98);
       cursor: default;
       font-family: var(--sans);
-      font-size: var(--hero-word-size, clamp(88px, 14vw, 244px));
+      font-size: var(--hero-word-base);
       font-style: italic;
       font-weight: 900;
       line-height: 1;
@@ -379,7 +382,9 @@
       overflow: visible;
       text-rendering: geometricPrecision;
       white-space: nowrap;
-      transition: color 220ms ease, filter 220ms ease, text-shadow 220ms ease;
+      transform: scale(var(--hero-scale));
+      transform-origin: center center;
+      transition: color 220ms ease, filter 220ms ease, text-shadow 220ms ease, transform 220ms ease;
     }
 
     .hero-letter {
@@ -444,7 +449,7 @@
       -webkit-background-clip: initial;
       background-clip: initial;
       -webkit-text-fill-color: currentColor;
-      transform: translateY(-10px);
+      transform: translateY(calc(-10px / var(--hero-scale)));
       filter: none;
       text-shadow: none;
     }
@@ -465,7 +470,7 @@
       -webkit-background-clip: initial;
       background-clip: initial;
       -webkit-text-fill-color: currentColor;
-      transform: translateY(-10px);
+      transform: translateY(calc(-10px / var(--hero-scale)));
       filter: none;
       text-shadow: none;
     }
@@ -488,16 +493,16 @@
 
     .hero-intro {
       position: absolute;
-      right: clamp(24px, 4vw, 76px);
-      bottom: clamp(36px, 5vw, 64px);
+      right: var(--hero-gutter);
+      bottom: 64px;
       z-index: 5;
       display: grid;
       gap: 12px;
       width: min(100%, 560px);
-      max-width: calc(100vw - clamp(48px, 8vw, 152px));
+      max-width: calc(100vw - (var(--hero-gutter) * 2));
       color: rgba(255, 255, 255, 0.56);
       font-family: var(--mono);
-      font-size: 12px;
+      font-size: clamp(10px, calc(12px * var(--hero-scale)), 12px);
       line-height: 1.9;
       letter-spacing: 0.03em;
       text-align: left;
@@ -2040,6 +2045,18 @@
       }
     }
 
+    @keyframes copyFadeInMobile {
+      from {
+        opacity: 0;
+        transform: translate(-50%, -48%);
+      }
+
+      to {
+        opacity: 1;
+        transform: translate(-50%, -50%);
+      }
+    }
+
     @keyframes cardIn {
       to {
         opacity: 1;
@@ -2222,63 +2239,6 @@
         display: none;
       }
 
-      .hero {
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-        justify-content: flex-start;
-        gap: 18px;
-        min-height: 100vh;
-        padding: 96px 28px 52px;
-      }
-
-      .copy-block {
-        min-height: auto;
-        width: 100%;
-        align-items: flex-start;
-      }
-
-      .hero-word {
-        width: 100%;
-        max-width: 100%;
-        font-size: clamp(62px, 15vw, 126px);
-        line-height: 0.9;
-        padding: 0.1em 0 0.14em;
-        transform: none;
-      }
-
-      .hero-word span {
-        width: 100%;
-        transform: none;
-      }
-
-      .hero-intro {
-        position: relative;
-        right: auto;
-        bottom: auto;
-        left: auto;
-        width: 100%;
-        max-width: min(100%, 560px);
-        margin-top: 2px;
-        font-size: 11px;
-        line-height: 1.75;
-      }
-
-      .hero-media {
-        z-index: 0;
-        opacity: 1;
-      }
-
-      .hero::after {
-        z-index: 1;
-      }
-
-      .copy-block,
-      .hero-intro {
-        position: relative;
-        z-index: 2;
-      }
-
       .visual-stage {
         min-height: 590px;
       }
@@ -2438,86 +2398,6 @@
 
       .page {
         width: 100%;
-      }
-
-      .hero {
-        min-height: 100vh;
-        padding: 92px 20px 52px;
-        overflow: hidden;
-      }
-
-      .copy-block {
-        min-height: auto;
-        width: 100%;
-        align-items: flex-start;
-      }
-
-      .hero-word {
-        max-width: 100%;
-        font-size: clamp(52px, 18vw, 92px);
-        padding: 0.08em 0 0.12em;
-      }
-
-      .hero-intro {
-        width: 100%;
-        max-width: none;
-        margin-top: 4px;
-        font-size: 10px;
-        line-height: 1.65;
-      }
-
-      .hero-media {
-        display: block;
-        z-index: 0;
-        background:
-          radial-gradient(circle at 18% 28%, rgba(64, 112, 255, 0.46), transparent 32%),
-          radial-gradient(circle at 82% 66%, rgba(117, 89, 255, 0.42), transparent 34%),
-          radial-gradient(circle at 52% 48%, rgba(244, 114, 182, 0.22), transparent 34%),
-          #000;
-      }
-
-      .hero-media::before {
-        position: absolute;
-        inset: -28%;
-        content: "";
-        background:
-          radial-gradient(ellipse at 22% 34%, rgba(64, 112, 255, 0.58), transparent 30%),
-          radial-gradient(ellipse at 78% 58%, rgba(117, 89, 255, 0.5), transparent 34%),
-          radial-gradient(ellipse at 54% 78%, rgba(244, 114, 182, 0.26), transparent 32%);
-        filter: blur(26px);
-        opacity: 0.88;
-        animation: mobileHeroDrift 8s ease-in-out infinite alternate;
-      }
-
-      .hero-media::after {
-        position: absolute;
-        inset: 0;
-        content: "";
-        background:
-          linear-gradient(115deg, rgba(255, 255, 255, 0.08), transparent 28%, rgba(255, 255, 255, 0.04) 58%, transparent 78%),
-          repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.022) 0 1px, transparent 1px 18px);
-        opacity: 0.82;
-      }
-
-      .hero-video {
-        display: block;
-      }
-
-      .hero-word {
-        width: 100%;
-        max-width: calc(100vw - 40px);
-      }
-
-      .hero-intro {
-        position: relative;
-        right: auto;
-        bottom: auto;
-        left: auto;
-        width: 100%;
-        max-width: none;
-        margin-top: 4px;
-        font-size: 10px;
-        line-height: 1.6;
       }
 
       .scroll-note {
@@ -2758,7 +2638,7 @@
           loop
           muted
           playsinline
-          preload="auto"
+          preload="metadata"
           crossorigin="anonymous"
         ></video>
       </div>
@@ -2782,7 +2662,7 @@
       <div class="about-profile-panel">
         <div class="about-left-stack">
           <figure class="profile-photo-card" aria-label="朱钰个人照片">
-            <img src="assets/profile-photo.png" alt="朱钰的个人照片">
+            <img src="assets/profile-photo.png" alt="朱钰的个人照片" loading="lazy" decoding="async">
             <figcaption class="profile-photo-meta">
               <span>朱钰</span>
               <span>UI/UX DESIGNER</span>
@@ -2847,7 +2727,7 @@
         <article class="project-card" role="button" tabindex="0" data-project="pc" aria-label="查看大型改版详情">
           <div class="project-no">PROJECT 01</div>
           <div class="project-visual" aria-hidden="true">
-            <img src="assets/projects/pc/frame-04.jpg" alt="">
+            <img src="assets/projects/pc/frame-04.jpg" alt="" loading="eager" fetchpriority="high" decoding="async">
           </div>
           <h3>大型改版</h3>
           <p>围绕社区场景的核心路径、信息获取效率和浏览体验，完成 PC 端大型改版与关键功能重构。</p>
@@ -2856,7 +2736,7 @@
         <article class="project-card" role="button" tabindex="0" data-project="ip" aria-label="查看品牌视觉升级详情">
           <div class="project-no">PROJECT 02</div>
           <div class="project-visual" aria-hidden="true">
-            <img src="assets/projects/ip/frame-21.jpg" alt="">
+            <img src="assets/projects/ip/frame-21.jpg" alt="" loading="eager" fetchpriority="high" decoding="async">
           </div>
           <h3>品牌视觉升级</h3>
           <p>以小组件为 IP 实践起点，运用情感化设计构建滑稽 IP 角色资产。</p>
@@ -2865,7 +2745,7 @@
         <article class="project-card" role="button" tabindex="0" data-project="harmony" aria-label="查看多端适配详情">
           <div class="project-no">PROJECT 03</div>
           <div class="project-visual" aria-hidden="true">
-            <img src="assets/projects/harmony/frame-37-2.jpg" alt="">
+            <img src="assets/projects/harmony/frame-37-2.jpg" alt="" loading="eager" fetchpriority="high" decoding="async">
           </div>
           <h3>多端适配</h3>
           <p>在鸿蒙 0-1 新端搭建的过程中，沉淀新规范和多端适配规则，支持多个业务场景的一致体验。</p>
@@ -2874,7 +2754,7 @@
         <article class="project-card" role="button" tabindex="0" data-project="ai" aria-label="查看创新业务详情">
           <div class="project-no">PROJECT 04</div>
           <div class="project-visual" aria-hidden="true">
-            <img src="assets/projects/ai/frame-45.jpg" alt="">
+            <img src="assets/projects/ai/frame-45.jpg" alt="" loading="eager" fetchpriority="high" decoding="async">
           </div>
           <h3>创新业务</h3>
           <p>围绕创新业务场景，结合 Codex、Figma 与 vibe coding 方法，快速转译成可交互的设计验证页面。</p>
@@ -2883,7 +2763,7 @@
         <article class="project-card" role="button" tabindex="0" data-project="video" aria-label="查看视频制作详情">
           <div class="project-no">PROJECT 05</div>
           <div class="project-visual" aria-hidden="true">
-            <img src="assets/projects/video/video-1.jpg" alt="">
+            <img src="assets/projects/video/video-1.jpg" alt="" loading="eager" fetchpriority="high" decoding="async">
           </div>
           <h3>视频制作</h3>
           <p>滴滴年度总结视频项目，围绕品牌表达、信息梳理和视频节奏完成全案制作。</p>
@@ -2892,7 +2772,7 @@
         <article class="project-card" role="button" tabindex="0" data-project="c4d" aria-label="查看C4D建模详情">
           <div class="project-no">PROJECT 06</div>
           <div class="project-visual" aria-hidden="true">
-            <video src="assets/projects/c4d/c4d-1.mov" autoplay muted loop playsinline preload="auto"></video>
+            <video src="assets/projects/c4d/c4d-1.mov" autoplay muted loop playsinline preload="metadata"></video>
           </div>
           <h3>C4D建模</h3>
           <p>两个 C4D 建模录屏，展示模型结构、材质变化和最终镜头效果。</p>
@@ -2921,7 +2801,7 @@
         </div>
       </div>
       <aside class="qr-card" aria-label="WeChat QR code">
-        <img src="assets/wechat-qr.jpg" alt="朱钰的微信二维码">
+        <img src="assets/wechat-qr.jpg" alt="朱钰的微信二维码" loading="lazy" decoding="async">
       </aside>
     </section>
 
@@ -2953,7 +2833,6 @@
     </div>
   </aside>
 
-  <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.18/dist/hls.min.js"></script>
   <script>
     let loadingFinished = false;
     let loadingClosing = false;
@@ -2962,7 +2841,9 @@
     let loadingProgress = 12;
     let heroRevealQueued = false;
     let heroFrameReleased = false;
+    let hlsLoadPromise = null;
     const loaderFill = document.querySelector(".loader-bar span");
+    const hlsScriptUrl = "https://cdn.jsdelivr.net/npm/hls.js@1.5.18/dist/hls.min.js";
 
     const setLoaderProgress = (value) => {
       loadingProgress = Math.max(12, Math.min(100, value));
@@ -2993,13 +2874,32 @@
 
     loadingProgressTimer = window.setInterval(() => {
       if (loadingFinished || loadingClosing) return;
-      const target = heroFrameReleased ? 100 : 88;
+      const target = heroFrameReleased ? 100 : 95;
       if (loadingProgress >= target) return;
       const step = Math.max(1, Math.round((target - loadingProgress) * 0.18));
       setLoaderProgress(loadingProgress + step);
     }, 120);
 
-    loadingTimeout = window.setTimeout(finishLoading, 15000);
+    loadingTimeout = window.setTimeout(finishLoading, 3200);
+
+    const loadHlsLibrary = () => {
+      if (window.Hls) {
+        return Promise.resolve(window.Hls);
+      }
+
+      if (!hlsLoadPromise) {
+        hlsLoadPromise = new Promise((resolve, reject) => {
+          const script = document.createElement("script");
+          script.src = hlsScriptUrl;
+          script.async = true;
+          script.onload = () => resolve(window.Hls);
+          script.onerror = reject;
+          document.head.append(script);
+        });
+      }
+
+      return hlsLoadPromise;
+    };
 
     const getProjectFallbackSrc = (src) => {
       if (!src) return null;
@@ -3042,40 +2942,18 @@
 
     const heroSection = document.querySelector(".hero");
     const heroWord = document.querySelector(".hero-word");
-    const fitHeroWord = () => {
+    const applyHeroScale = () => {
       if (!heroSection || !heroWord) return;
 
-      const compactHero = heroSection.clientWidth <= 980;
-      const safeWidth = compactHero
-        ? Math.max(200, Math.floor(heroSection.clientWidth - 40))
-        : Math.max(320, Math.floor(heroSection.clientWidth * 0.84));
-      const minSize = compactHero ? 36 : 84;
-      const maxSize = compactHero
-        ? Math.min(92, Math.max(minSize, Math.floor(heroSection.clientWidth * 0.18)))
-        : Math.min(320, Math.max(minSize, Math.floor(heroSection.clientWidth * 0.18)));
+      const width = window.innerWidth || document.documentElement.clientWidth || 1440;
+      const availableWidth = Math.max(220, width - 136);
+      const titleWidth = Math.max(1, heroWord.scrollWidth);
+      const scale = Math.min(1, availableWidth / titleWidth);
 
-      let low = minSize;
-      let high = maxSize;
-      let best = minSize;
-
-      heroWord.style.fontSize = `${maxSize}px`;
-
-      while (low <= high) {
-        const mid = Math.floor((low + high) / 2);
-        heroWord.style.fontSize = `${mid}px`;
-
-        if (heroWord.scrollWidth <= safeWidth) {
-          best = mid;
-          low = mid + 1;
-        } else {
-          high = mid - 1;
-        }
-      }
-
-      heroWord.style.setProperty("--hero-word-size", `${best}px`);
+      document.documentElement.style.setProperty("--hero-scale", scale.toFixed(3));
     };
 
-    const scheduleHeroWordFit = () => requestAnimationFrame(fitHeroWord);
+    const scheduleHeroScale = () => requestAnimationFrame(applyHeroScale);
     const letterizeHeroWord = () => {
       if (!heroWord || heroWord.dataset.letterized === "true") return;
 
@@ -3102,18 +2980,18 @@
 
     if (heroSection && heroWord) {
       letterizeHeroWord();
-      scheduleHeroWordFit();
+      scheduleHeroScale();
 
       if (window.ResizeObserver) {
-        const heroResizeObserver = new ResizeObserver(scheduleHeroWordFit);
+        const heroResizeObserver = new ResizeObserver(scheduleHeroScale);
         heroResizeObserver.observe(heroSection);
       }
 
       if (document.fonts?.ready) {
-        document.fonts.ready.then(scheduleHeroWordFit).catch(() => {});
+        document.fonts.ready.then(scheduleHeroScale).catch(() => {});
       }
 
-      window.addEventListener("resize", scheduleHeroWordFit, { passive: true });
+      window.addEventListener("resize", scheduleHeroScale, { passive: true });
     }
 
     const heroVideo = document.querySelector(".hero-video");
@@ -3157,43 +3035,6 @@
           heroRevealQueued = true;
           window.requestAnimationFrame(() => releaseHeroFrame());
         }
-      } else if (window.Hls && window.Hls.isSupported()) {
-        const heroHls = new window.Hls({
-          enableWorker: true,
-          lowLatencyMode: false
-        });
-
-        heroHls.loadSource(heroSrc);
-        heroHls.attachMedia(heroVideo);
-        heroHls.on(window.Hls.Events.MANIFEST_PARSED, () => {
-          if (heroRevealQueued) return;
-          heroRevealQueued = true;
-
-          const queueHeroReveal = () => {
-            if (heroVideo.requestVideoFrameCallback) {
-              heroVideo.requestVideoFrameCallback(() => releaseHeroFrame());
-            } else {
-              const waitForVisibleFrame = () => {
-                if (heroFrameReleased || loadingFinished || loadingClosing) return;
-                if (heroVideo.readyState >= 2 && !heroVideo.paused) {
-                  window.requestAnimationFrame(() => {
-                    window.requestAnimationFrame(releaseHeroFrame);
-                  });
-                  return;
-                }
-
-                window.setTimeout(waitForVisibleFrame, 80);
-              };
-
-              waitForVisibleFrame();
-            }
-          };
-
-          queueHeroReveal();
-          heroVideo.play().catch(() => {});
-        });
-
-        window.addEventListener("beforeunload", () => heroHls.destroy(), { once: true });
       } else if (heroVideo.canPlayType("application/vnd.apple.mpegurl")) {
         heroVideo.src = heroSrc;
         heroVideo.addEventListener("loadedmetadata", () => {
@@ -3208,6 +3049,63 @@
           }
           heroVideo.play().catch(() => {});
         }, { once: true });
+      } else {
+        const startDesktopHero = () => {
+          loadHlsLibrary()
+            .then((Hls) => {
+              if (!Hls || !Hls.isSupported()) {
+                throw new Error("HLS unavailable");
+              }
+
+              const heroHls = new Hls({
+                enableWorker: true,
+                lowLatencyMode: false
+              });
+
+              heroHls.loadSource(heroSrc);
+              heroHls.attachMedia(heroVideo);
+              heroHls.on(Hls.Events.MANIFEST_PARSED, () => {
+                if (heroRevealQueued) return;
+                heroRevealQueued = true;
+
+                const queueHeroReveal = () => {
+                  if (heroVideo.requestVideoFrameCallback) {
+                    heroVideo.requestVideoFrameCallback(() => releaseHeroFrame());
+                  } else {
+                    const waitForVisibleFrame = () => {
+                      if (heroFrameReleased || loadingFinished || loadingClosing) return;
+                      if (heroVideo.readyState >= 2 && !heroVideo.paused) {
+                        window.requestAnimationFrame(() => {
+                          window.requestAnimationFrame(releaseHeroFrame);
+                        });
+                        return;
+                      }
+
+                      window.setTimeout(waitForVisibleFrame, 80);
+                    };
+
+                    waitForVisibleFrame();
+                  }
+                };
+
+                queueHeroReveal();
+                heroVideo.play().catch(() => {});
+              });
+
+              window.addEventListener("beforeunload", () => heroHls.destroy(), { once: true });
+            })
+            .catch(() => {
+              heroVideo.src = heroMobileSrc;
+              heroVideo.load();
+              heroVideo.play().catch(() => {});
+            });
+        };
+
+        if (window.requestIdleCallback) {
+          window.requestIdleCallback(startDesktopHero, { timeout: 1200 });
+        } else {
+          window.setTimeout(startDesktopHero, 220);
+        }
       }
     }
 
@@ -3567,7 +3465,7 @@
           video.muted = true;
           video.loop = true;
           video.playsInline = true;
-          video.preload = "auto";
+          video.preload = "metadata";
           video.controls = project.player === true;
           if (project.player === true) {
             video.controlsList = "nodownload noplaybackrate";
@@ -3581,7 +3479,8 @@
           const img = document.createElement("img");
           img.src = image;
           img.alt = `${project.title} 作品图 ${index + 1}`;
-          img.loading = index > 1 ? "lazy" : "eager";
+          img.loading = index > 0 ? "lazy" : "eager";
+          img.decoding = "async";
           attachProjectFallback(img);
           shot.append(img);
         }
