@@ -2424,12 +2424,6 @@
           #05060a;
       }
 
-      .hero-video {
-        opacity: 0.98;
-        transform: scale(1.02);
-        filter: saturate(0.88) contrast(1.04) brightness(0.86);
-      }
-
       .hero::after {
         opacity: 0.34;
       }
@@ -3020,9 +3014,11 @@
     }
 
     const heroVideo = document.querySelector(".hero-video");
+    const heroMedia = document.querySelector(".hero-media");
     if (heroVideo) {
       const heroSrc = "https://stream.mux.com/8wrHPCX2dC3msyYU9ObwqNdm00u3ViXvOSHUMRYSEe5Q.m3u8";
       const heroMobileSrc = "assets/hero-mobile.mp4";
+      const heroMobileStill = "assets/hero-mobile-still.jpg";
       const releaseHeroFrame = () => {
         if (heroFrameReleased || loadingFinished || loadingClosing) return;
         heroFrameReleased = true;
@@ -3037,29 +3033,27 @@
       const isMobileHero = window.matchMedia("(max-width: 680px)").matches;
 
       if (isMobileHero) {
-        heroVideo.preload = "auto";
+        heroVideo.poster = heroMobileStill;
         heroVideo.src = heroMobileSrc;
-        heroVideo.addEventListener("loadeddata", () => {
+        heroVideo.preload = "auto";
+        heroVideo.load();
+        const revealMobileHero = () => {
           if (heroRevealQueued) return;
           heroRevealQueued = true;
-
-          const queueHeroReveal = () => {
-            if (heroVideo.requestVideoFrameCallback) {
-              heroVideo.requestVideoFrameCallback(() => releaseHeroFrame());
-            } else {
-              window.requestAnimationFrame(() => {
-                window.requestAnimationFrame(releaseHeroFrame);
-              });
-            }
-          };
-
-          queueHeroReveal();
+          if (heroVideo.requestVideoFrameCallback) {
+            heroVideo.requestVideoFrameCallback(() => releaseHeroFrame());
+          } else {
+            window.requestAnimationFrame(() => {
+              window.requestAnimationFrame(releaseHeroFrame);
+            });
+          }
           heroVideo.play().catch(() => {});
-        }, { once: true });
-        heroVideo.load();
-        if (heroVideo.readyState >= 2 && !heroRevealQueued) {
-          heroRevealQueued = true;
-          window.requestAnimationFrame(() => releaseHeroFrame());
+        };
+        if (heroVideo.readyState >= 2) {
+          revealMobileHero();
+        } else {
+          heroVideo.addEventListener("loadeddata", revealMobileHero, { once: true });
+          heroVideo.addEventListener("canplay", revealMobileHero, { once: true });
         }
       } else if (heroVideo.canPlayType("application/vnd.apple.mpegurl")) {
         heroVideo.src = heroSrc;
