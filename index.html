@@ -1061,7 +1061,7 @@
     .about-profile-panel {
       display: grid;
       grid-template-columns: minmax(320px, 430px) minmax(0, 1fr);
-      gap: clamp(48px, 5vw, 88px);
+      gap: clamp(40px, 3.8vw, 72px);
       align-items: start;
     }
 
@@ -2405,7 +2405,10 @@
       }
 
       .hero-video {
-        display: none;
+        display: block;
+        opacity: 0.9;
+        transform: scale(1.06);
+        filter: saturate(0.82) contrast(1.04) brightness(0.8);
       }
 
       .hero-word {
@@ -2770,7 +2773,7 @@
         <article class="project-card" role="button" tabindex="0" data-project="harmony" aria-label="查看多端适配详情">
           <div class="project-no">PROJECT 03</div>
           <div class="project-visual" aria-hidden="true">
-            <img src="assets/projects/harmony/frame-30.jpg" alt="">
+            <img src="assets/projects/harmony/frame-37-2.jpg" alt="">
           </div>
           <h3>多端适配</h3>
           <p>在鸿蒙 0-1 新端搭建的过程中，沉淀新规范和多端适配规则，支持多个业务场景的一致体验。</p>
@@ -3006,6 +3009,7 @@
     const heroVideo = document.querySelector(".hero-video");
     if (heroVideo) {
       const heroSrc = "https://stream.mux.com/8wrHPCX2dC3msyYU9ObwqNdm00u3ViXvOSHUMRYSEe5Q.m3u8";
+      const heroMobileSrc = "assets/hero-mobile.mp4";
       const releaseHeroFrame = () => {
         if (heroFrameReleased || loadingFinished || loadingClosing) return;
         heroFrameReleased = true;
@@ -3020,7 +3024,32 @@
       const isMobileHero = window.matchMedia("(max-width: 680px)").matches;
 
       if (isMobileHero) {
-        releaseHeroFrame();
+        heroVideo.src = heroMobileSrc;
+        heroVideo.setAttribute("playsinline", "");
+        heroVideo.setAttribute("muted", "");
+        heroVideo.setAttribute("autoplay", "");
+        heroVideo.setAttribute("loop", "");
+        heroVideo.addEventListener("loadeddata", () => {
+          if (heroRevealQueued) return;
+          heroRevealQueued = true;
+          const queueHeroReveal = () => {
+            if (heroVideo.requestVideoFrameCallback) {
+              heroVideo.requestVideoFrameCallback(() => releaseHeroFrame());
+            } else {
+              window.requestAnimationFrame(() => {
+                window.requestAnimationFrame(releaseHeroFrame);
+              });
+            }
+          };
+          queueHeroReveal();
+          heroVideo.play().catch(() => {});
+        }, { once: true });
+        heroVideo.addEventListener("error", () => releaseHeroFrame(), { once: true });
+        heroVideo.load();
+        if (heroVideo.readyState >= 2 && !heroRevealQueued) {
+          heroRevealQueued = true;
+          window.requestAnimationFrame(() => releaseHeroFrame());
+        }
       } else if (window.Hls && window.Hls.isSupported()) {
         const heroHls = new window.Hls({
           enableWorker: true,
@@ -3321,7 +3350,7 @@
         ],
         tags: ["HarmonyOS", "Multi-End"],
         images: [
-          "assets/projects/harmony/frame-30.jpg",
+          "assets/projects/harmony/frame-37-2.jpg",
           "assets/projects/harmony/frame-38.jpg",
           "assets/projects/harmony/frame-39.jpg",
           "assets/projects/harmony/frame-41.jpg",
