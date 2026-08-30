@@ -2411,21 +2411,19 @@
       }
 
       .hero {
-        background:
-          radial-gradient(circle at 24% 22%, rgba(165, 180, 252, 0.16), transparent 30%),
-          radial-gradient(circle at 76% 76%, rgba(244, 114, 182, 0.12), transparent 32%),
-          linear-gradient(180deg, #070810, #04050a);
+        background: #000;
       }
 
       .hero-media {
-        background:
-          radial-gradient(circle at 24% 22%, rgba(165, 180, 252, 0.12), transparent 28%),
-          radial-gradient(circle at 76% 76%, rgba(244, 114, 182, 0.08), transparent 30%),
-          #05060a;
+        background: #000 url("assets/hero-mobile-static.png") center center / cover no-repeat;
       }
 
       .hero::after {
-        opacity: 0.34;
+        opacity: 0;
+      }
+
+      .hero-video {
+        display: none;
       }
 
       .card-tools {
@@ -3017,8 +3015,7 @@
     const heroMedia = document.querySelector(".hero-media");
     if (heroVideo) {
       const heroSrc = "https://stream.mux.com/8wrHPCX2dC3msyYU9ObwqNdm00u3ViXvOSHUMRYSEe5Q.m3u8";
-      const heroMobileSrc = "assets/hero-mobile.mp4";
-      const heroMobileStill = "assets/hero-mobile-still.jpg";
+      const heroMobileStatic = "assets/hero-mobile-static.png";
       const releaseHeroFrame = () => {
         if (heroFrameReleased || loadingFinished || loadingClosing) return;
         heroFrameReleased = true;
@@ -3033,27 +3030,26 @@
       const isMobileHero = window.matchMedia("(max-width: 680px)").matches;
 
       if (isMobileHero) {
-        heroVideo.poster = heroMobileStill;
-        heroVideo.src = heroMobileSrc;
-        heroVideo.preload = "auto";
+        heroVideo.pause();
+        heroVideo.removeAttribute("src");
+        heroVideo.removeAttribute("poster");
+        heroVideo.preload = "none";
         heroVideo.load();
+        heroVideo.style.display = "none";
+        heroMedia.style.backgroundImage = `url("${heroMobileStatic}")`;
         const revealMobileHero = () => {
           if (heroRevealQueued) return;
           heroRevealQueued = true;
-          if (heroVideo.requestVideoFrameCallback) {
-            heroVideo.requestVideoFrameCallback(() => releaseHeroFrame());
-          } else {
-            window.requestAnimationFrame(() => {
-              window.requestAnimationFrame(releaseHeroFrame);
-            });
-          }
-          heroVideo.play().catch(() => {});
+          window.requestAnimationFrame(() => {
+            window.requestAnimationFrame(releaseHeroFrame);
+          });
         };
-        if (heroVideo.readyState >= 2) {
+        const mobileStill = new Image();
+        mobileStill.addEventListener("load", revealMobileHero, { once: true });
+        mobileStill.addEventListener("error", revealMobileHero, { once: true });
+        mobileStill.src = heroMobileStatic;
+        if (mobileStill.complete && mobileStill.naturalWidth > 0) {
           revealMobileHero();
-        } else {
-          heroVideo.addEventListener("loadeddata", revealMobileHero, { once: true });
-          heroVideo.addEventListener("canplay", revealMobileHero, { once: true });
         }
       } else if (heroVideo.canPlayType("application/vnd.apple.mpegurl")) {
         heroVideo.src = heroSrc;
