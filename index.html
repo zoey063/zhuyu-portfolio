@@ -2415,7 +2415,7 @@
       }
 
       .hero-media {
-        background: #000 url("assets/hero-mobile-static.png") center center / cover no-repeat;
+        background: #000;
       }
 
       .hero::after {
@@ -2423,7 +2423,9 @@
       }
 
       .hero-video {
-        display: none;
+        opacity: 0.98;
+        transform: scale(1.02);
+        filter: saturate(0.84) contrast(1.03) brightness(0.82);
       }
 
       .card-tools {
@@ -3015,6 +3017,7 @@
     const heroMedia = document.querySelector(".hero-media");
     if (heroVideo) {
       const heroSrc = "https://stream.mux.com/8wrHPCX2dC3msyYU9ObwqNdm00u3ViXvOSHUMRYSEe5Q.m3u8";
+      const heroMobileSrc = "assets/hero-mobile.mp4";
       const heroMobileStatic = "assets/hero-mobile-static.png";
       const releaseHeroFrame = () => {
         if (heroFrameReleased || loadingFinished || loadingClosing) return;
@@ -3031,11 +3034,14 @@
 
       if (isMobileHero) {
         heroVideo.pause();
-        heroVideo.removeAttribute("src");
-        heroVideo.removeAttribute("poster");
-        heroVideo.preload = "none";
+        heroVideo.muted = true;
+        heroVideo.defaultMuted = true;
+        heroVideo.playsInline = true;
+        heroVideo.src = heroMobileSrc;
+        heroVideo.poster = heroMobileStatic;
+        heroVideo.preload = "auto";
         heroVideo.load();
-        heroVideo.style.display = "none";
+        heroVideo.play().catch(() => {});
         heroMedia.style.backgroundImage = `url("${heroMobileStatic}")`;
         const revealMobileHero = () => {
           if (heroRevealQueued) return;
@@ -3044,6 +3050,18 @@
             window.requestAnimationFrame(releaseHeroFrame);
           });
         };
+        const revealWhenReady = () => {
+          if (heroVideo.requestVideoFrameCallback) {
+            heroVideo.requestVideoFrameCallback(() => revealMobileHero());
+          } else {
+            revealMobileHero();
+          }
+        };
+        heroVideo.addEventListener("loadeddata", revealWhenReady, { once: true });
+        heroVideo.addEventListener("canplay", revealWhenReady, { once: true });
+        if (heroVideo.readyState >= 2) {
+          revealWhenReady();
+        }
         const mobileStill = new Image();
         mobileStill.addEventListener("load", revealMobileHero, { once: true });
         mobileStill.addEventListener("error", revealMobileHero, { once: true });
