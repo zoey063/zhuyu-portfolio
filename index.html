@@ -582,7 +582,7 @@
     .loader-bar span {
       position: absolute;
       inset: 0;
-      width: 12%;
+      width: 0%;
       background: linear-gradient(90deg, #4070FF 0%, #7559FF 60%, rgba(255, 255, 255, 0.96) 100%);
       border-radius: inherit;
       box-shadow: 0 0 26px rgba(117, 89, 255, 0.42);
@@ -2662,7 +2662,7 @@
         ></video>
       </div>
       <div class="copy-block">
-        <h1 class="hero-word" aria-label="PORTFOLIO">PORTFOLIO</h1>
+        <h1 class="hero-word" aria-label="Portfolio">Portfolio</h1>
       </div>
       <div class="hero-intro" aria-label="Personal introduction">
         <p>UI / UX designer focused on product systems, visual clarity, and calm interaction details.</p>
@@ -2855,51 +2855,42 @@
   <script>
     let loadingFinished = false;
     let loadingClosing = false;
-    let loadingTimeout = null;
-    let loadingProgressTimer = null;
-    let loadingProgress = 12;
+    let loadingProgress = 0;
+    let loadingAssetTotal = 0;
+    let loadingAssetSettled = 0;
     let heroRevealQueued = false;
     let heroFrameReleased = false;
+    let heroFallbackTimer = null;
     let hlsLoadPromise = null;
     const loaderFill = document.querySelector(".loader-bar span");
     const hlsScriptUrl = "https://cdn.jsdelivr.net/npm/hls.js@1.5.18/dist/hls.min.js";
 
     const setLoaderProgress = (value) => {
-      loadingProgress = Math.max(12, Math.min(100, value));
+      loadingProgress = Math.max(0, Math.min(100, value));
       if (loaderFill) {
         loaderFill.style.width = `${loadingProgress}%`;
       }
     };
 
-    setLoaderProgress(loadingProgress);
-
     const finishLoading = () => {
       if (loadingFinished || loadingClosing) return;
+      if (!heroFrameReleased || loadingAssetSettled < loadingAssetTotal) return;
       loadingClosing = true;
-      if (loadingTimeout) {
-        window.clearTimeout(loadingTimeout);
-      }
-      if (loadingProgressTimer) {
-        window.clearInterval(loadingProgressTimer);
-        loadingProgressTimer = null;
-      }
       setLoaderProgress(100);
       window.setTimeout(() => {
         loadingFinished = true;
         document.body.classList.remove("is-loading");
         document.body.classList.add("is-ready", "reveal-ready");
-      }, 180);
+      }, 260);
     };
 
-    loadingProgressTimer = window.setInterval(() => {
-      if (loadingFinished || loadingClosing) return;
-      const target = heroFrameReleased ? 100 : 95;
-      if (loadingProgress >= target) return;
-      const step = Math.max(1, Math.round((target - loadingProgress) * 0.18));
-      setLoaderProgress(loadingProgress + step);
-    }, 120);
-
-    loadingTimeout = window.setTimeout(finishLoading, 3200);
+    const updateLoadingProgress = () => {
+      const progress = loadingAssetTotal
+        ? (loadingAssetSettled / loadingAssetTotal) * 100
+        : heroFrameReleased ? 100 : 0;
+      setLoaderProgress(progress);
+      finishLoading();
+    };
 
     const loadHlsLibrary = () => {
       if (window.Hls) {
@@ -2950,6 +2941,90 @@
     };
 
     document.querySelectorAll('img[src], video[src]').forEach(attachProjectFallback);
+
+    const initialImages = [...document.querySelectorAll("img[src]")];
+    const preloadSources = ["assets/noise.png", "assets/hero-mobile-static.png"];
+    const preloadImages = preloadSources.map(() => new Image());
+    const trackedImages = [...initialImages, ...preloadImages];
+    loadingAssetTotal = trackedImages.length + 1;
+
+    const trackImageLoad = (image) => {
+      let settled = false;
+      let waitingForFallback = false;
+      let loadObserved = false;
+      let completionTimer = null;
+
+      const cleanup = () => {
+        image.removeEventListener("load", handleLoad);
+        image.removeEventListener("error", handleError);
+        if (completionTimer) {
+          window.clearTimeout(completionTimer);
+          completionTimer = null;
+        }
+      };
+
+      const settle = () => {
+        if (settled) return;
+        settled = true;
+        cleanup();
+        loadingAssetSettled += 1;
+        updateLoadingProgress();
+      };
+
+      const handleLoad = () => {
+        if (loadObserved) return;
+        loadObserved = true;
+        if (typeof image.decode !== "function") {
+          settle();
+          return;
+        }
+        const decodeTimer = window.setTimeout(settle, 2000);
+        Promise.resolve()
+          .then(() => image.decode())
+          .catch(() => {})
+          .then(() => {
+            window.clearTimeout(decodeTimer);
+            settle();
+          });
+      };
+
+      const handleError = () => {
+        if (image.dataset.fallbackApplied === "true" && !waitingForFallback) {
+          waitingForFallback = true;
+          if (!image.complete) return;
+        }
+        settle();
+      };
+
+      const checkComplete = () => {
+        if (settled || loadObserved) return;
+        const hasSource = Boolean(image.currentSrc || image.src || image.getAttribute("src"));
+        if (hasSource && image.complete) {
+          if (image.naturalWidth > 0) {
+            handleLoad();
+          } else {
+            handleError();
+          }
+          return;
+        }
+        completionTimer = window.setTimeout(checkComplete, 60);
+      };
+
+      image.addEventListener("load", handleLoad);
+      image.addEventListener("error", handleError);
+
+      if (image instanceof HTMLImageElement) {
+        image.loading = "eager";
+        image.decoding = "async";
+      }
+      checkComplete();
+    };
+
+    trackedImages.forEach(trackImageLoad);
+    preloadImages.forEach((image, index) => {
+      image.src = preloadSources[index];
+    });
+    updateLoadingProgress();
 
     const setLocalPointer = (element, event, xName, yName) => {
       const rect = element.getBoundingClientRect();
@@ -3019,30 +3094,37 @@
       const heroSrc = "https://stream.mux.com/8wrHPCX2dC3msyYU9ObwqNdm00u3ViXvOSHUMRYSEe5Q.m3u8";
       const heroMobileSrc = "assets/hero-mobile.mp4";
       const heroMobileStatic = "assets/hero-mobile-static.png";
+      const showStaticHero = () => {
+        if (heroFrameReleased) return;
+        heroRevealQueued = true;
+        heroVideo.pause();
+        heroVideo.style.display = "none";
+        heroVideo.removeAttribute("src");
+        heroVideo.load();
+        heroMedia.style.backgroundImage = `url("${heroMobileStatic}")`;
+        releaseHeroFrame();
+      };
       const releaseHeroFrame = () => {
         if (heroFrameReleased || loadingFinished || loadingClosing) return;
         heroFrameReleased = true;
-        setLoaderProgress(100);
-        if (loadingProgressTimer) {
-          window.clearInterval(loadingProgressTimer);
-          loadingProgressTimer = null;
+        if (heroFallbackTimer) {
+          window.clearTimeout(heroFallbackTimer);
+          heroFallbackTimer = null;
         }
-        window.setTimeout(finishLoading, 140);
+        loadingAssetSettled += 1;
+        updateLoadingProgress();
       };
+
+      heroFallbackTimer = window.setTimeout(() => {
+        if (heroFrameReleased) return;
+        showStaticHero();
+      }, 6000);
 
       const isMobileHero = window.matchMedia("(max-width: 680px)").matches;
 
       if (isMobileHero) {
-        heroVideo.pause();
-        heroVideo.muted = true;
-        heroVideo.defaultMuted = true;
-        heroVideo.playsInline = true;
-        heroVideo.src = heroMobileSrc;
-        heroVideo.poster = heroMobileStatic;
-        heroVideo.preload = "auto";
-        heroVideo.load();
-        heroVideo.play().catch(() => {});
-        heroMedia.style.backgroundImage = `url("${heroMobileStatic}")`;
+        showStaticHero();
+
         const revealMobileHero = () => {
           if (heroRevealQueued) return;
           heroRevealQueued = true;
@@ -3050,18 +3132,6 @@
             window.requestAnimationFrame(releaseHeroFrame);
           });
         };
-        const revealWhenReady = () => {
-          if (heroVideo.requestVideoFrameCallback) {
-            heroVideo.requestVideoFrameCallback(() => revealMobileHero());
-          } else {
-            revealMobileHero();
-          }
-        };
-        heroVideo.addEventListener("loadeddata", revealWhenReady, { once: true });
-        heroVideo.addEventListener("canplay", revealWhenReady, { once: true });
-        if (heroVideo.readyState >= 2) {
-          revealWhenReady();
-        }
         const mobileStill = new Image();
         mobileStill.addEventListener("load", revealMobileHero, { once: true });
         mobileStill.addEventListener("error", revealMobileHero, { once: true });
@@ -3070,7 +3140,10 @@
           revealMobileHero();
         }
       } else if (heroVideo.canPlayType("application/vnd.apple.mpegurl")) {
+        heroVideo.poster = heroMobileStatic;
+        heroMedia.style.backgroundImage = `url("${heroMobileStatic}")`;
         heroVideo.src = heroSrc;
+        heroVideo.addEventListener("error", showStaticHero, { once: true });
         heroVideo.addEventListener("loadedmetadata", () => {
           if (heroRevealQueued) return;
           heroRevealQueued = true;
@@ -3081,9 +3154,12 @@
               window.requestAnimationFrame(releaseHeroFrame);
             });
           }
-          heroVideo.play().catch(() => {});
+          heroVideo.play().catch(showStaticHero);
         }, { once: true });
       } else {
+        heroVideo.poster = heroMobileStatic;
+        heroMedia.style.backgroundImage = `url("${heroMobileStatic}")`;
+        heroVideo.addEventListener("error", showStaticHero, { once: true });
         const startDesktopHero = () => {
           loadHlsLibrary()
             .then((Hls) => {
@@ -3123,15 +3199,17 @@
                 };
 
                 queueHeroReveal();
-                heroVideo.play().catch(() => {});
+                heroVideo.play().catch(showStaticHero);
               });
 
               window.addEventListener("beforeunload", () => heroHls.destroy(), { once: true });
             })
             .catch(() => {
+              heroRevealQueued = false;
+              heroVideo.style.display = "";
               heroVideo.src = heroMobileSrc;
               heroVideo.load();
-              heroVideo.play().catch(() => {});
+              heroVideo.play().catch(showStaticHero);
             });
         };
 
