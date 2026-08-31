@@ -513,6 +513,16 @@
 
     .hero-intro p {
       margin: 0;
+      opacity: 0;
+      transform: translateY(12px);
+    }
+
+    body.is-ready .hero-intro p {
+      animation: heroTextIn 620ms cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+    }
+
+    body.is-ready .hero-intro p:nth-child(2) {
+      animation-delay: 120ms;
     }
 
     .site-loader {
@@ -2043,8 +2053,26 @@
     }
 
     @keyframes copyFadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(18px);
+      }
+
       to {
         opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes heroTextIn {
+      from {
+        opacity: 0;
+        transform: translateY(12px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
       }
     }
 
