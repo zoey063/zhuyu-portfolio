@@ -3515,6 +3515,7 @@
           "assets/projects/pc/frame-13.jpg",
           "assets/projects/pc/frame-14.jpg",
           "assets/projects/pc/frame-15.jpg",
+          "assets/projects/pc/frame-14b.mov",
           "assets/projects/pc/frame-16.jpg",
           "assets/projects/pc/frame-17.jpg",
           "assets/projects/pc/frame-18.jpg"
@@ -3575,15 +3576,17 @@
         meta: [
           ["source", "视频 + C4D"],
           ["focus", "视频制作 / C4D 建模"],
-          ["screens", "6"]
+          ["screens", "7"]
         ],
         tags: ["Video", "Motion Design", "C4D"],
         player: true,
+        playerIndices: [4],
         images: [
           "assets/projects/video/video-1.jpg",
           "assets/projects/video/video-2.jpg",
           "assets/projects/video/video-3.jpg",
           "assets/projects/video/video-4.mp4",
+          "assets/projects/video/video-5.jpg",
           "assets/projects/c4d/c4d-1.mov",
           "assets/projects/c4d/c4d-2.mov"
         ]
@@ -3711,7 +3714,7 @@
           video.loop = true;
           video.playsInline = true;
           video.preload = "metadata";
-          video.controls = project.player === true;
+          video.controls = project.player === true && (project.playerIndices ? project.playerIndices.includes(index) : true);
           if (project.player === true) {
             video.controlsList = "nodownload noplaybackrate";
             video.disablePictureInPicture = true;
